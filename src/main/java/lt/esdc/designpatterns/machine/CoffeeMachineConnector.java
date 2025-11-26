@@ -3,7 +3,7 @@ package lt.esdc.designpatterns.machine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CoffeeMachineConnector implements CoffeeMachineV15 {
+public class CoffeeMachineConnector implements CoffeeMachineV69 {
     // Regex for pattern: "<number>ml <number>g <number>ml"
     String pattern = "^\\d+ml \\d+g \\d+ml$";
 
