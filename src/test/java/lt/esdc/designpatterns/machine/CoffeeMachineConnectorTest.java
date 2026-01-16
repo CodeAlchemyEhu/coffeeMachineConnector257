@@ -81,4 +81,14 @@ class CoffeeMachineConnectorTest {
         assertTrue(ex.getCause() instanceof InterruptedException);
     }
 
+    @Test
+    void shouldAcceptOrderWithToppings() {
+        connector.send("200ml 15g 100ml cream caramel");
+    }
+
+    @Test
+    void shouldAcceptOrderWithMultipleToppings() {
+        connector.send("300ml 12g 250ml cream caramel liquor");
+    }
+
 }
