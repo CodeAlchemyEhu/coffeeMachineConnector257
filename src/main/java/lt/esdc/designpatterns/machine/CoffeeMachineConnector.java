@@ -25,7 +25,7 @@ public class CoffeeMachineConnector implements CoffeeMachineV69 {
         logger.info("..........");
         try {
             Thread.sleep(1000L);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         logger.info("Ready");
