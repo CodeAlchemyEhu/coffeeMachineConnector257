@@ -5,9 +5,11 @@ import lt.esdc.designpatterns.domain.CoffeeRecipe;
 
 public class Espresso implements Coffee {
     private final CoffeeRecipe recipe;
+    private final double price;
 
-    public Espresso(CoffeeRecipe recipe) {
+    public Espresso(CoffeeRecipe recipe, double price) {
         this.recipe = recipe;
+        this.price = price;
     }
 
     @Override
@@ -19,6 +21,9 @@ public class Espresso implements Coffee {
     public String getName() {
         return "espresso";
     }
+
+    @Override
+    public double getPrice() {
+        return price;
+    }
 }
-
-

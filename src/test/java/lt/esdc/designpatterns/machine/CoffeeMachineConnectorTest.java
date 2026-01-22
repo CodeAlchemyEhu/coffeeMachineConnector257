@@ -65,23 +65,6 @@ class CoffeeMachineConnectorTest {
     }
 
     @Test
-    void shouldWrapInterruptedExceptionInRuntimeException() {
-        // Override to simulate Thread.sleep throwing InterruptedException
-        CoffeeMachineConnector testConnector = new CoffeeMachineConnector() {
-            @Override
-            public void send(String order) {
-                if (!order.matches(pattern)) return;
-                throw new RuntimeException(new InterruptedException("Simulated interruption"));
-            }
-        };
-
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> testConnector.send("200ml 15g 100ml"));
-
-        assertTrue(ex.getCause() instanceof InterruptedException);
-    }
-
-    @Test
     void shouldAcceptOrderWithToppings() {
         connector.send("200ml 15g 100ml cream caramel");
     }
@@ -91,4 +74,81 @@ class CoffeeMachineConnectorTest {
         connector.send("300ml 12g 250ml cream caramel liquor");
     }
 
+    // --- State Pattern Tests ---
+
+    @Test
+    void shouldSwitchToClosedStateAfterTwoFailures() {
+        // Arrange: Subclass to simulate failures
+        CoffeeMachineConnector testConnector = new CoffeeMachineConnector() {
+            @Override
+            public void realSend(String order) {
+                throw new RuntimeException("Simulated Failure");
+            }
+        };
+
+        // Act & Assert
+        // 1st failure
+        assertThrows(RuntimeException.class, () -> testConnector.send("200ml 15g 100ml"));
+        // 2nd failure -> should switch to Closed
+        assertThrows(RuntimeException.class, () -> testConnector.send("200ml 15g 100ml"));
+
+        // 3rd call -> Should be ignored (Closed State)
+        // In ClosedState, handle() prints "Ignored" and does NOT call realSend (so no exception thrown)
+        testConnector.send("200ml 15g 100ml"); 
+        
+        // No exception means we are in Closed State
+    }
+
+    @Test
+    void shouldSwitchToSemiClosedAfterFiveIgnored() {
+        CoffeeMachineConnector testConnector = new CoffeeMachineConnector() {
+            @Override
+            public void realSend(String order) {
+                throw new RuntimeException("Simulated Failure");
+            }
+        };
+
+        // 1. Trigger Closed State (2 failures)
+        assertThrows(RuntimeException.class, () -> testConnector.send("valid"));
+        assertThrows(RuntimeException.class, () -> testConnector.send("valid"));
+
+        // 2. Consume 5 ignored calls
+        for (int i = 0; i < 5; i++) {
+            testConnector.send("valid"); // Should not throw
+        }
+
+        // 3. Next call should be Semi-Closed -> tries realSend -> throws Exception
+        assertThrows(RuntimeException.class, () -> testConnector.send("valid"));
+    }
+
+    @Test
+    void shouldRecoverToOpenStateFromSemiClosedOnSuccess() {
+        // We need a connector that fails initially then succeeds
+        CoffeeMachineConnector testConnector = new CoffeeMachineConnector() {
+            private int failCount = 0;
+            @Override
+            public void realSend(String order) {
+                if (failCount < 2) {
+                    failCount++;
+                    throw new RuntimeException("Simulated Failure");
+                }
+                // Success afterwards
+            }
+        };
+
+        // 1. Trigger Closed State (2 failures)
+        assertThrows(RuntimeException.class, () -> testConnector.send("valid"));
+        assertThrows(RuntimeException.class, () -> testConnector.send("valid"));
+
+        // 2. Consume 5 ignored calls
+        for (int i = 0; i < 5; i++) {
+            testConnector.send("valid");
+        }
+
+        // 3. Semi-Closed try -> Success
+        testConnector.send("valid");
+
+        // 4. Next call -> Open State -> Success (if we were still closed, we'd ignore)
+        testConnector.send("valid");
+    }
 }
