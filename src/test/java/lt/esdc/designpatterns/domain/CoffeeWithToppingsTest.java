@@ -9,7 +9,7 @@ class CoffeeWithToppingsTest {
     @Test
     void shouldAddToppingsToCommand() {
         CoffeeRecipe recipe = new CoffeeRecipe(300, 12, 250);
-        Coffee baseCoffee = new Latte(recipe);
+        Coffee baseCoffee = new Latte(recipe, 4.0);
         CoffeeWithToppings coffeeWithToppings = new CoffeeWithToppings(baseCoffee, java.util.Arrays.asList("cream", "caramel"));
         
         String command = coffeeWithToppings.getCommandString();
@@ -20,7 +20,7 @@ class CoffeeWithToppingsTest {
     @Test
     void shouldReturnBaseCommandWhenNoToppings() {
         CoffeeRecipe recipe = new CoffeeRecipe(200, 15, 100);
-        Coffee baseCoffee = new Latte(recipe);
+        Coffee baseCoffee = new Latte(recipe, 4.0);
         CoffeeWithToppings coffeeWithToppings = new CoffeeWithToppings(baseCoffee, java.util.Collections.emptyList());
         
         String command = coffeeWithToppings.getCommandString();
@@ -31,7 +31,7 @@ class CoffeeWithToppingsTest {
     @Test
     void shouldReturnBaseName() {
         CoffeeRecipe recipe = new CoffeeRecipe(300, 12, 250);
-        Coffee baseCoffee = new Latte(recipe);
+        Coffee baseCoffee = new Latte(recipe, 4.0);
         CoffeeWithToppings coffeeWithToppings = new CoffeeWithToppings(baseCoffee, java.util.Arrays.asList("cream"));
         
         String name = coffeeWithToppings.getName();

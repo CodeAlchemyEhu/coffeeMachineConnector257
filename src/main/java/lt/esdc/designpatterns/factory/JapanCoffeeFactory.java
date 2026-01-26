@@ -10,18 +10,16 @@ public class JapanCoffeeFactory implements CoffeeFactory {
 
     @Override
     public Coffee createEspresso() {
-        return new Espresso(new CoffeeRecipe(45, 17, 0));
+        return new Espresso(new CoffeeRecipe(45, 17, 0), 1.80);
     }
 
     @Override
     public Coffee createCappuccino() {
-        return new Cappuccino(new CoffeeRecipe(180, 15, 80));
+        return new Cappuccino(new CoffeeRecipe(180, 15, 80), 3.20);
     }
 
     @Override
     public Coffee createLatte() {
-        return new Latte(new CoffeeRecipe(220, 14, 180));
+        return new Latte(new CoffeeRecipe(220, 14, 180), 3.80);
     }
 }
-
-

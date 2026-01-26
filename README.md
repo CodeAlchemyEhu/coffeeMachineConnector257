@@ -92,3 +92,122 @@ Only one session can be open at any time
 This behavior mimics real-world external device integrations where authentication, session control, and state validation are required.
 
 ---
+
+## 📝 New task for behavioral design patterns p.1
+
+
+### 🧠 Task – Order Price Calculation
+Extend the coffee ordering system to **calculate the final order price** dynamically, depending on:
+
+- coffee type
+- region
+- applied discount rules
+
+Use **stratagy** pattern
+
+
+#### ✔ Description
+
+Each coffee order must be able to calculate its **base price** and then apply **one discount strategy**.
+
+
+#### ✔ Regional Coffee Price Table
+
+#### ☕ Base Coffee Prices (USD)
+
+| Region             | Espresso | Cappuccino | Latte |
+|-------------------|----------|------------|-------|
+|  **USA**      | $2.00    | $3.50      | $4.00 |
+| **Japan**  | $1.80    | $3.20      | $3.80 |
+
+
+#### 🍯 Topping Prices (EUR)
+
+| Topping  | Price |
+|---------|-------|
+| Caramel | $0.90 |
+| Cream   | $0.50 |
+| Liquor  | $0.70 |
+
+- Toppings can be combined
+- Each topping adds its price to the base coffee price
+
+#### ✔ Discount Strategies
+
+Only **one discount** may be applied per order.
+
+| Discount Type       | Rule |
+|---------------------|------|
+| **None**            | No discount |
+| **Student** 🎓      | 20% off total price |
+| **Loyalty Card** 💳 | 10% off total price |
+
+
+
+#### ✔ Example Usage
+
+```
+student latte cream caramel
+
+none espresso
+```
+
+### 🧠 Task – Order Processing Pipeline
+
+#### 🎯 Goal
+Refactor the order processing logic into a **step-by-step processing pipeline** where each step is responsible for **exactly one concern**.
+
+Use **Chain of Responsibility** pattern
+
+#### ✔ Description
+
+Processing a coffee order involves multiple sequential actions, such as (examples):
+
+- parsing the input string
+- identifying coffee type
+- applying toppings
+- applying discount rules
+
+### 🧠 Task – Coffee Machine Connector States
+
+### 🎯 Goal
+Enhance the `CoffeeMachineConnector` to behave differently depending on its **internal state**, simulating a real-world unstable external device.
+
+The connector must automatically switch between states based on **successes and failures** during operation.
+
+Use **state** pattern
+
+
+#### ✔ Description
+
+The coffee machine connector must operate in **three distinct states**:
+
+1. **OPEN**
+2. **CLOSED**
+3. **SEMI-CLOSED**
+
+Each state defines how the connector reacts to incoming coffee preparation requests.
+
+#### ✔ State Definitions & Rules
+
+##### 🟢 OPEN State
+- Normal operating mode
+- All requests are executed normally
+- If **2 exceptions occur processing**:
+   - the connector switches to **CLOSED** state
+
+##### 🔴 CLOSED State
+- Protective mode
+- The connector **ignores the next 5 incoming calls**
+- Ignored calls:
+   - must not reach the real coffee machine
+- After 5 ignored calls:
+   - the connector switches to **SEMI-CLOSED** state
+
+##### 🟡 SEMI-CLOSED State
+- Testing mode
+- The connector allows **exactly one request** to pass through
+- If the request:
+   - **succeeds** → switch to **OPEN**
+   - **fails** → switch back to **CLOSED**
+
