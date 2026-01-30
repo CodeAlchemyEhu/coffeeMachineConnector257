@@ -2,6 +2,7 @@ package lt.esdc.designpatterns.chain;
 
 import lt.esdc.designpatterns.domain.CoffeeWithToppings;
 import lt.esdc.designpatterns.machine.CoffeeMachineV69;
+import lt.esdc.designpatterns.observer.OrderEventPublisher;
 
 public class SendHandler implements OrderHandler {
     private CoffeeMachineV69 machine;
@@ -22,6 +23,12 @@ public class SendHandler implements OrderHandler {
         } else {
             cmd = ctx.coffee.getRecipe().toCommandString();
         }
-        machine.send(cmd);
+        try {
+            machine.send(cmd);
+            OrderEventPublisher.publish(ctx, true, null);
+        } catch (Exception e) {
+            OrderEventPublisher.publish(ctx, false, e);
+            throw e;
+        }
     }
 }
